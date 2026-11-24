@@ -155,7 +155,10 @@ function setup() {
   handLayer = createGraphics(width, height);
 
   if (handPose) {
-    video = createCapture(VIDEO, { flipped: true });
+    // a silent project: the camera never asks for the microphone, and the video is muted
+    video = createCapture(VIDEO, { flipped: true, audio: false });
+    video.volume(0);
+    video.elt.muted = true;
     video.size(640, 480);
     // the camera view sits beside the canvas, mirrored, and V shows or hides it
     video.parent(select("main"));
