@@ -4,7 +4,7 @@ Sidney Ngai, DM3008 Generative Art, Week 6: Autonomous Agents
 
 ![An open palm scattering seed at the void deck, with the flock gathering round it](pigeons-palm.png)
 
-Demo video: `pigeons-demo.webm` (to be added: feeding with an open palm, a fist scaring the flock, the flock resettling, then the auntie taking over once the hand is gone)
+Demo video: [demoVideo.webm](demoVideo.webm) (about 40 s screen recording)
 
 ## Synopsis
 
@@ -169,7 +169,7 @@ Images_Videos/
   pigeons-palm.png     an open palm scattering seed
   pigeons-scare.png    a fist, with the startle wave spreading out
   pigeons-auntie.png   the auntie feeding them with no hand at the camera
-  pigeons-demo.webm    screen recording (to be added)
+  demoVideo.webm       about 40 s screen recording
 ```
 
 ## Attributions
