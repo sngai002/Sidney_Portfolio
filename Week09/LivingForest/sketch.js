@@ -5,12 +5,10 @@ DM3008 Generative Art - Week 9: Fractals & Recursion
 "Living Forest"
 
 Synopsis
-  A forest of recursive trees under a sky that runs from midday to midnight
-  as you move the mouse from left to right. Every tree is the same rule: a
-  branch is a line with two smaller trees on its tip. As the light goes, the
-  branches open up, the sun drops and turns into the moon, the stars come out
-  and the blossoms start to glow, so the forest you see at midnight is the
-  same forest as at noon, just lit differently.
+  Recursive trees under a sky that runs from midday (mouse on the left) to
+  midnight (mouse on the right). Each tree is a line with two smaller trees
+  on its tip, and as night falls the branches spread, the sun sets into the
+  moon and the blossoms glow under the stars.
 
 What I changed from the Living Tree starter
   The weekly starter draws one tree under a fixed dusk sky. On top of its

@@ -2,11 +2,11 @@
  * Week 11 - Generative Adversarial Networks
  * EVERYTHING IS A CAT (portfolio version)
  *
- * A drawing of something from a Singapore day is made one shaky pen
- * stroke at a time, and after every stroke pix2pix (edges2cats) is asked
- * what it sees. The cat puts itself together while the kopi bag, durian,
- * Merlion, HDB block or ice kachang is still being drawn. A filmstrip
- * keeps six moments of it becoming a cat. You can draw your own too.
+ * A drawing of something from a Singapore day (a kopi bag, a durian, the
+ * Merlion, an HDB block or ice kachang) is turned into a cat by pix2pix
+ * (edges2cats). The object keeps its shape: the outline is still a durian
+ * or an HDB block, with fur and cat-like features laid over it like a
+ * filter or a skin.
  *
  * Every function is marked: template (Ashley Hi), template modified by
  * Sidney, or new (Sidney). Template = Ashley Hi's Week 11 Pix2Pix demo.

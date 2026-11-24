@@ -6,24 +6,26 @@ DM3008 Generative Art - Week 7: Cybernetics & Emergence
 "Bubble Tea"
 
 Synopsis
-  Every pearl in the cup is a bubble tea shop. New shops open right next to
-  existing ones (copycats), and every shop has a small chance of closing each
-  frame. Owners open a shop when the street looks like it has room for one, but
-  what they see is always a little out of date, so the whole street is reacting
-  to old news. Singapore has watched this happen more than once: a craze, a shop
-  on every corner, then shutters.
+  Every pearl in the cup is a bubble tea shop. It is about how a food trend
+  overcrowds a street: once a few shops look busy, copycats open right next
+  to them, and every shop has a small chance of closing each frame. Owners
+  open a shop when the street looks like it still has room, but what they
+  see is two seconds old. By the time the hype reaches them, the street may
+  already be full. Singapore has been through this with bubble tea more
+  than once.
 
-  The piece is a feedback loop with a delay in it. The street reads its own
-  size, but the reading is two seconds old. Below what the street can really
-  hold, owners open shops; above it, nobody does. The slider sets how hard
-  owners chase the hype (the gain). Chase it gently and the street finds its
-  level. Chase it hard on old news and it can never settle: it booms and
-  crashes for ever, with no ending and no reset.
+  The dashed line is how many shops the street can support. The slider sets
+  how hard owners chase the hype. Set low, owners hold back as the street
+  fills, and it settles around the line. Set high, they keep piling in after
+  it is full, the street ends up with far more shops than it can support,
+  openings stop, and shops close one after another until it thins out. Then
+  the street looks empty again and the next rush starts. Past the tipping
+  point marked under the slider, this boom and bust repeats for as long as
+  the sketch runs.
 
-  Clicking the cup is a viral post: a wave of copycat shops opens at once. Two
-  seconds later the street is still acting on what it saw before the wave, so
-  it keeps opening shops, overshoots, and crashes. The viewer starts the boom
-  and then has to watch the crash.
+  Clicking the cup is a viral post that opens a wave of copycat shops at
+  once. Owners are still working from the count before the post, so they
+  keep opening more until the street is overcrowded and crashes.
 
 What I changed from the Steersman starter
   - Started from the Conditions stance: the population is read with a delay in
