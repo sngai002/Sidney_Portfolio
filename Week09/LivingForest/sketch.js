@@ -32,8 +32,6 @@ What I changed from the Living Tree starter
   - Night glow. After dark each blossom gets stacked, low-alpha halos that
     spread wider and whiter, so where blossoms overlap in a dense canopy the
     tree lights up more than at its loose tips.
-  - For the portfolio: rewrote this header, tidied and commented the code,
-    and removed the save-PNG key.
 
 Controls
   mouse X  left = midday, middle = sunset, right = midnight. The same axis
@@ -41,14 +39,15 @@ Controls
   R        grow a new forest (new positions, shapes and blossoms)
 
 Attributions
-  The recursive branch() (line, translate to the tip, two rotated children
-  inside push() / pop()), the random angle and length jitter fixed with
-  randomSeed(), the noise() wind that only moves the tips, the depth-based
-  stroke weight and bark-to-twig colour, and the blossom() at the tips come
-  from the Living Tree starter (DM3008 week 9 class material, Ashley Hi).
-  The forest, distance and haze, live sky, celestial body, day / night
-  colour ramps, stars, ground and night glow are my own.
-  Written for p5.js 1.11.11 (https://p5js.org).
+  The Living Tree starter (DM3008 week 9 class material, Ashley Hi):
+    - started from the starter and changed by me: setup(), draw(), branch(),
+      blossom(), paintSky() and keyPressed(). The recursive branch() (line,
+      translate to the tip, two rotated children inside push() / pop()), the
+      angle and length jitter fixed with randomSeed(), the noise() wind that
+      only moves the tips, the depth-based stroke weight and bark-to-twig
+      colour, and the blossom() at the tips are the starter's.
+  Every other function is my own.
+  Written for p5.js 1.11.11.
 
 */
 
@@ -71,6 +70,7 @@ let hazeCol; // the sky colour at the horizon, which far things fade towards
 // Setup
 // the stars and the forest are made once; draw() only lights them
 /////////////////////////////////////////////////////////////////
+// makes the canvas in HSB, then scatters the stars and grows the forest
 function setup() {
   createCanvas(800, 800);
   colorMode(HSB, 360, 100, 100, 100);
@@ -78,6 +78,7 @@ function setup() {
   makeForest();
 }
 
+// scatters 170 stars above the horizon, each with its own size, brightness and twinkle
 function makeStars() {
   randomSeed(3); // the same sky every time
   stars = [];
@@ -92,6 +93,7 @@ function makeStars() {
   }
 }
 
+// places TREES trees from near to far: far ones are smaller, thinner and shallower
 function makeForest() {
   randomSeed(forestSeed);
   trees = [];
@@ -121,6 +123,8 @@ function makeForest() {
 // Draw
 // everything is lit by u, 0 at midday and 1 at midnight
 /////////////////////////////////////////////////////////////////
+// every frame: read the time of day from the mouse, paint sky, stars, sun or moon
+// and ground, then draw the trees far to near and the hill in front
 function draw() {
   let u = constrain(mouseX / width, 0, 1);
   let angle = map(mouseX, 0, width, 0.18, 0.72); // the trees open up as the light goes
@@ -160,6 +164,7 @@ function draw() {
 // The tree
 // a branch is a line with two smaller trees on its tip
 /////////////////////////////////////////////////////////////////
+// draws one branch, moves to its tip, then draws two smaller branches rotated left and right
 function branch(len, depth, angle) {
   let t = 1 - depth / curDepth; // 0 at the trunk, 1 at the tips
 
@@ -196,6 +201,7 @@ function branch(len, depth, angle) {
   pop();
 }
 
+// a blossom at the tip of a branch, with a halo that grows and brightens after dark
 function blossom() {
   if (random() > 0.82) return; // leave some tips bare
 
@@ -240,8 +246,8 @@ function paintSky(top, bot) {
   }
 }
 
+// twinkling stars that fade in from just after sunset
 function paintStars(u) {
-  // stars fade in from just after sunset
   let night = constrain(map(u, 0.45, 0.88, 0, 1), 0, 1);
   if (night <= 0) return;
 
@@ -280,14 +286,15 @@ function paintCelestial(u) {
 /////////////////////////////////////////////////////////////////
 // The ground
 /////////////////////////////////////////////////////////////////
+// the ground colour at this time of day: green by day, warm at sunset, blue at night
 function groundColour(u) {
   return triLerp(color(96, 44, 42), color(24, 58, 28), color(236, 46, 11), u);
 }
 
+// the flat ground from the horizon down, pushed towards the sky colour because it is far away
 function paintGround(u) {
   let g = groundColour(u);
   noStroke();
-  // the far ground sits in haze, so push it towards the sky colour
   fill(lerpColor(g, hazeCol, 0.5));
   rect(0, height * HORIZON, width, height * (1 - HORIZON));
 }
@@ -316,8 +323,11 @@ function triLerpNum(a, b, c, u) {
 /////////////////////////////////////////////////////////////////
 // Controls
 /////////////////////////////////////////////////////////////////
+// R grows a new forest. draw() has just fixed the random seed for the last tree,
+// so the seed is reset from the clock first, or R would give the same forests every time
 function keyPressed() {
   if (key === "r" || key === "R") {
+    randomSeed(millis());
     forestSeed = floor(random(100000));
     makeForest();
   }

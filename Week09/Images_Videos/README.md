@@ -83,9 +83,8 @@ in class. I kept its `branch()` recursion and built a scene around it: the fores
 and haze, the live sky, the single sun / moon, the day / night colour ramps, the stars, the
 ground and the night glow.
 
-For the portfolio I rewrote the header with a synopsis, what changed and attributions,
-tidied and commented the code, removed the save-PNG key, and moved the sketch to p5.js
-1.11.11 to match my other pieces.
+For the portfolio I removed the save-PNG key and moved the sketch to p5.js 1.11.11 to
+match my other pieces.
 
 ## Running it
 

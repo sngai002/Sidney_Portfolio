@@ -1,4 +1,3 @@
-// Stance: Conditions (after Cheng)
 /*
 
 Sidney Ngai
@@ -34,7 +33,8 @@ What I changed from the Steersman starter
     the street ends up: the loop pulls back towards its level equally hard at
     every gain, so gain 1 and gain 3 settle the same way, just at different
     sizes. In my rule gain is how strongly owners react, so it decides whether
-    the street settles or swings. (The working is in README.md.)
+    the street settles or swings. (The working is in the README in
+    Images_Videos.)
   - Added a fixed size the street can hold (HOLD), drawn as the dashed line.
   - Worked out the tipping point where the street stops settling (TIP), and
     marked it under the slider.
@@ -60,19 +60,27 @@ Controls
   the gain can also be set in the address, e.g. index.html?gain=3
 
 Attributions
-  The sense / update / render loop, the delayed population reading and the
-  open-ended birth / death population come from the Steersman starter and its
-  Conditions stance (DM3008 week 7 class material, Ashley Hi), which is after
-  the work of Ian Cheng. The reworked birth rule, HOLD, the tipping point,
-  copycat openings, viral posts, the slider, the cup, pearls, chart and
-  readouts are my own.
-  Written for p5.js 1.11.11 (https://p5js.org).
+  The Steersman starter (DM3008 week 7 class material, Ashley Hi) and its
+  Conditions stance, which is after the work of Ian Cheng:
+    - started from the starter and changed by me: setup(), draw(), sense(),
+      update() and render(). The sense / update / render loop, the delayed
+      population reading and the open-ended birth / death population are the
+      starter's. The reworked birth rule, HOLD and the tipping point are mine.
+  Every other function is my own.
+  Written for p5.js 1.11.11.
 
 */
 
 //=== the cup ===
 // the cup is a trapezoid: wider at the top than the bottom
-let CUP = { top: 90, bottom: 560, topLeft: 50, topRight: 370, bottomLeft: 90, bottomRight: 330 };
+let CUP = {
+  top: 90,
+  bottom: 560,
+  topLeft: 50,
+  topRight: 370,
+  bottomLeft: 90,
+  bottomRight: 330,
+};
 let PEARL = 11; // *** change pearl size here
 let MAX_SHOPS = 1100; // the cup is full
 
@@ -87,7 +95,7 @@ let START_SHOPS = 40;
 
 // above this gain the street can never settle. a loop that corrects at rate k
 // on news that is DELAY frames old keeps swinging once k * DELAY passes PI / 2,
-// and here k = REACT * gain * HOLD (the working is in README.md).
+// and here k = REACT * gain * HOLD (the working is in the README in Images_Videos).
 // worked out in setup(), because p5's HALF_PI does not exist until then
 let TIP;
 
@@ -102,8 +110,6 @@ let chart = []; // a longer history, only for drawing
 let chartPosts = []; // true where a viral post happened, lined up with chart
 let CHART_STEP = 4; // frames between points on the chart (185 points x 4 = about 12 s)
 let lastReading = 0;
-let opened = 0;
-let closed = 0;
 
 let slider;
 
@@ -116,6 +122,7 @@ let SLIDER_Y = 488;
 // Shop
 // one pearl, drifting slowly around the cup
 /////////////////////////////////////////////////////////////////
+// one shop: where it sits in the cup, which way it is drifting and how long it has been open
 function Shop(x, y) {
   this.x = x;
   this.y = y;
@@ -123,8 +130,8 @@ function Shop(x, y) {
   this.age = 0;
 }
 
+// wanders a little each frame and sinks slowly, like a real pearl
 Shop.prototype.update = function () {
-  // wander, and sink a little like a real pearl
   this.a += random(-0.2, 0.2);
   this.x += cos(this.a) * 0.6;
   this.y += sin(this.a) * 0.6 + 0.05;
@@ -132,7 +139,7 @@ Shop.prototype.update = function () {
   this.keepInCup();
 };
 
-// keep inside the cup, which narrows towards the bottom
+// keeps the pearl inside the cup, which narrows towards the bottom
 Shop.prototype.keepInCup = function () {
   this.y = constrain(this.y, CUP.top + 30, CUP.bottom - PEARL / 2);
   let t = map(this.y, CUP.top, CUP.bottom, 0, 1);
@@ -141,8 +148,8 @@ Shop.prototype.keepInCup = function () {
   this.x = constrain(this.x, left, right);
 };
 
+// draws the pearl. a new shop pops in from small, so you can see where the openings are
 Shop.prototype.show = function () {
-  // a new shop pops in, so you can see where the openings are
   let s = min(PEARL, this.age * 0.5);
   fill(40, 24, 16);
   circle(this.x, this.y, s);
@@ -154,6 +161,7 @@ Shop.prototype.show = function () {
 /////////////////////////////////////////////////////////////////
 // Setup and the loop
 /////////////////////////////////////////////////////////////////
+// makes the canvas, works out the tipping point, puts the slider in the panel and opens the street
 function setup() {
   createCanvas(600, 600);
   pixelDensity(1);
@@ -179,8 +187,6 @@ function restart() {
   chart = [];
   chartPosts = [];
   posts = [];
-  opened = 0;
-  closed = 0;
   for (let i = 0; i < START_SHOPS; i++) {
     let s = new Shop(random(120, 300), random(400, 540));
     s.age = 100; // already open, so they do not pop in
@@ -188,10 +194,11 @@ function restart() {
   }
 }
 
+// every frame: read the old news, open and close shops on it, then draw the cup and the panel
 function draw() {
   gain = slider.value();
 
-  const pastPop = sense(); // 1. read the street's size, as it was DELAY frames ago
+  let pastPop = sense(); // 1. read the street's size, as it was DELAY frames ago
   update(pastPop); // 2. open and close shops based on that old reading
   render(); // 3. draw it
 }
@@ -199,6 +206,7 @@ function draw() {
 /////////////////////////////////////////////////////////////////
 // Sense: the street reads its own size, DELAY frames late
 /////////////////////////////////////////////////////////////////
+// counts the shops, keeps the last DELAY counts, and hands back the oldest one
 function sense() {
   popHistory.push(shops.length);
   if (popHistory.length > DELAY) popHistory.shift();
@@ -222,6 +230,7 @@ function sense() {
 /////////////////////////////////////////////////////////////////
 // Update: open fewer shops the bigger the street was
 /////////////////////////////////////////////////////////////////
+// moves the pearls, opens copycat shops next to existing ones and closes a few at random
 function update(pastPop) {
   // at HOLD, openings and closings balance. below it, owners open more shops,
   // above it, fewer. gain is how strongly they react to the (old) news
@@ -237,12 +246,9 @@ function update(pastPop) {
   }
 
   // every shop has the same small chance of closing
-  let before = shops.length;
   shops = shops.filter(function () {
     return random() > CLOSE_CHANCE;
   });
-  closed += before - shops.length;
-  opened += born.length;
   shops = shops.concat(born);
 
   // viral post rings grow and fade
@@ -255,17 +261,18 @@ function update(pastPop) {
 /////////////////////////////////////////////////////////////////
 // Viral post: a wave of copycats opens where you click
 /////////////////////////////////////////////////////////////////
+// drops a cluster of new shops around the click and starts a ring there
 function viralPost(x, y) {
   for (let i = 0; i < VIRAL_BURST && shops.length < MAX_SHOPS; i++) {
     let s = new Shop(x + randomGaussian(0, 30), y + randomGaussian(0, 30));
     s.keepInCup();
     shops.push(s);
   }
-  opened += VIRAL_BURST;
   posts.push({ x: x, y: y, age: 0 });
   postedSinceChart = true;
 }
 
+// true if the point is inside the trapezoid of the cup
 function insideCup(x, y) {
   if (y < CUP.top || y > CUP.bottom) return false;
   let t = map(y, CUP.top, CUP.bottom, 0, 1);
@@ -275,6 +282,7 @@ function insideCup(x, y) {
 /////////////////////////////////////////////////////////////////
 // Render
 /////////////////////////////////////////////////////////////////
+// draws the straw, the tea, the pearls and the cup, then the panel on the right
 function render() {
   background(245, 236, 220);
   noStroke();
@@ -285,14 +293,24 @@ function render() {
 
   // the tea, then the pearls in it
   fill(205, 160, 110);
-  quad(CUP.topLeft, CUP.top + 20, CUP.topRight, CUP.top + 20, CUP.bottomRight, CUP.bottom, CUP.bottomLeft, CUP.bottom);
+  quad(
+    CUP.topLeft, CUP.top + 20,
+    CUP.topRight, CUP.top + 20,
+    CUP.bottomRight, CUP.bottom,
+    CUP.bottomLeft, CUP.bottom
+  );
   for (let i = 0; i < shops.length; i++) shops[i].show();
 
   // the cup outline
   noFill();
   stroke(90, 70, 50);
   strokeWeight(3);
-  quad(CUP.topLeft, CUP.top, CUP.topRight, CUP.top, CUP.bottomRight, CUP.bottom, CUP.bottomLeft, CUP.bottom);
+  quad(
+    CUP.topLeft, CUP.top,
+    CUP.topRight, CUP.top,
+    CUP.bottomRight, CUP.bottom,
+    CUP.bottomLeft, CUP.bottom
+  );
   strokeWeight(1);
 
   drawPosts();
@@ -369,6 +387,7 @@ function drawChart(x, y, w, h) {
   text("- - what the street can hold", x, y + h + 14);
 }
 
+// the title, the street's mood, the live count, the old count owners see and the gain
 function drawReadouts() {
   noStroke();
   fill(40);
@@ -428,11 +447,12 @@ function drawSliderScale() {
 /////////////////////////////////////////////////////////////////
 // Controls
 /////////////////////////////////////////////////////////////////
+// a click in the cup is a viral post. clicks on the slider do nothing here
 function mousePressed() {
-  // only clicks inside the cup count, so using the slider does not post
   if (insideCup(mouseX, mouseY)) viralPost(mouseX, mouseY);
 }
 
+// 0 to 3 set the gain, R starts the street over
 function keyPressed() {
   if (key === "0" || key === "1" || key === "2" || key === "3") slider.value(int(key));
   if (key === "r" || key === "R") restart();
